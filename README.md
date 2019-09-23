@@ -4,7 +4,7 @@ ESP32-based IR receiver for IoT
 
 ** WORK IN PROGRESS **
 
-Most development for the time being weill best on the test version: https://github.com/mspeculatrix/ESP32_IR_IoT_hub-test/tree/master
+Most development for the time being will be on the test version: https://github.com/mspeculatrix/ESP32_IR_IoT_hub-test/tree/master
 
 This is an ESP32-based infrared receiver intended to be used with standard infarred remote controls.
 
