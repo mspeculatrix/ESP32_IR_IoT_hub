@@ -1,12 +1,16 @@
 /****************************************************************************
  IR ESP32 IoT hub
 
+ See: https://mansfield-devine.com/speculatrix/category/projects/home-control/esp32-ir-hub/
+  
  Using an ESP 32 board as an IR receiver, to take IR remote control commands
  and respond by sending out MQTT messages.
 
+ Uses the 1838T receiver connected to pin RECV_PIN.
+
  Requires the file wifi-credentials.h to be in the same location as this
- sketch. See the wifi-credentials-template.h file, which you can edit to
- suit your wifi environment.
+ sketch. See the wifi-credentials-template.h file, which you can edit and
+ rename to  suit your wifi environment.
 
  Use:
   Board:  ESP32 Dev Module
@@ -23,13 +27,13 @@
 #include "irdecode.h"
 #include <PubSubClient.h>
 
-
 #define LED 33
 #define RECV_PIN 25
 #define SERVER_ERR_LIMIT 5
 #define WIFI_MAX_TRIES 10
-#define MQTT_SERVER_ADDR "10.0.0.59"
-#define MQTT_TOPIC "home/lights"
+#define MQTT_SERVER_ADDR "10.0.0.59"  // replace with the address of your MQTT server
+#define MQTT_DEVICE_ID "ESP32_IR_hub"
+#define MQTT_TOPIC "home/lights"      // whatever topic you want
 
 // --- IR SENSOR --------------------------------------------------------------------------
 // Define IR Receiver and Results Objects
@@ -55,7 +59,7 @@ void wifiConnect() {
     if (wifi_status != WL_CONNECTED) {
       ssid_idx = 1 - ssid_idx;    // swap APs
     } else {
-      Serial.println("Connected!");
+      Serial.println("Wifi connected.");
       connect_counter = WIFI_MAX_TRIES; // to break out of the loop
       ip = WiFi.localIP();
       Serial.print("IP: "); Serial.println(ip);
@@ -81,7 +85,7 @@ WiFiClient mqttWifiClient;
 PubSubClient mqtt(mqttWifiClient);
 
 /**
-Callback function for incoming MQTT messages.
+  Callback function for incoming MQTT messages.
 **/
 void mqttCallback(char* topic, byte* message, unsigned int length) {
   // Topic is a char array. Easiest to cast it to a string to test
@@ -99,15 +103,15 @@ void mqttCallback(char* topic, byte* message, unsigned int length) {
 void mqttReconnect() {
   // Loop until we're reconnected
   while (!mqtt.connected()) {
-    Serial.print("Attempting MQTT connection...");
+    Serial.print("Attempting MQTT connection... ");
     // Attempt to connect
-    if (mqtt.connect("ESP32_IR_hub")) {
+    if (mqtt.connect(MQTT_DEVICE_ID)) {
       Serial.println("MQTT connected");
-      mqtt.subscribe("home/lights");
+      mqtt.subscribe(MQTT_TOPIC);
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqtt.state());
-      Serial.println(" try again in 5 seconds");
+      Serial.println(" - trying again in 5 seconds");
       // Wait 5 seconds before retrying
       delay(5000);
     }
@@ -144,12 +148,10 @@ void loop() {
   mqtt.loop();
   
   if (irrecv.decode(&results)) {
-    if(results.value != 0xFFFFFFFF) {
-      char resultsBuf[40];
-      flashLED(2, 10);
-      decodeDetails(resultsBuf, results);
-      Serial.println(resultsBuf);
-    }
+    flashLED(2, 10);
+    char resultsBuf[40];
+    decodeDetails(resultsBuf, results);
+    Serial.println(resultsBuf);
     
     // Send MQTT message according to code received
     switch (results.value) {

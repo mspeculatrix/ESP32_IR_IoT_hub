@@ -71,6 +71,8 @@ String decodeType(int value)
 
 void decodeDetails(char *buf, decode_results results)
 {
-	String type = decodeType(results.decode_type);
-	sprintf(buf, "0x%10X %10X %3d %s", results.value, results.value, results.bits, type);
+  if(results.value != 0xFFFFFFFF) {
+  	String type = decodeType(results.decode_type);
+	  sprintf(buf, "0x%10X %10X %3d %s", results.value, results.value, results.bits, type);
+  }
 }
