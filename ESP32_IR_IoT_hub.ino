@@ -12,7 +12,7 @@
  sketch. See the wifi-credentials-template.h file, which you can edit and
  rename to  suit your wifi environment.
 
- Use:
+ Use (on my Mac):
   Board:  ESP32 Dev Module
   Upload speed: 921600
   CPU freq: 240MHz
@@ -32,7 +32,7 @@
 #define SERVER_ERR_LIMIT 5
 #define WIFI_MAX_TRIES 10
 #define MQTT_SERVER_ADDR "10.0.0.59"  // replace with the address of your MQTT server
-#define MQTT_DEVICE_ID "ESP32_IR_hub"
+#define MQTT_DEVICE_ID "ESP32_IR_hub" // use whatever name you want
 #define MQTT_TOPIC "home/lights"      // whatever topic you want
 
 // --- IR SENSOR --------------------------------------------------------------------------
@@ -91,7 +91,9 @@ void mqttCallback(char* topic, byte* message, unsigned int length) {
   // Topic is a char array. Easiest to cast it to a string to test
   // for specific topics.
   if (String(topic) == MQTT_TOPIC) {
-    /* Just a placeholder to show how this works */
+    /*  Just a placeholder to show how this works. This is where
+        you'd respond to the message - perhaps by setting a flag that
+        could be dealt with in the main loop */
   }
   // The message is a byte array. We can build a string from it with:
   String msg;
@@ -107,7 +109,7 @@ void mqttReconnect() {
     // Attempt to connect
     if (mqtt.connect(MQTT_DEVICE_ID)) {
       Serial.println("MQTT connected");
-      mqtt.subscribe(MQTT_TOPIC);
+      mqtt.subscribe(MQTT_TOPIC);  // only if you want to respond to incoming messages
     } else {
       Serial.print("failed, rc=");
       Serial.print(mqtt.state());
