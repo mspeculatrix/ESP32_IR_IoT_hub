@@ -31,7 +31,7 @@
 #define RECV_PIN 25
 #define SERVER_ERR_LIMIT 5
 #define WIFI_MAX_TRIES 10
-#define MQTT_SERVER_ADDR "10.0.0.59"  // replace with the address of your MQTT server
+#define MQTT_SERVER_ADDR "10.0.1.59"  // replace with the address of your MQTT server
 #define MQTT_DEVICE_ID "ESP32_IR_hub" // use whatever name you want
 #define MQTT_TOPIC "home/lights"      // whatever topic you want
 
